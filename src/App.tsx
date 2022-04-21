@@ -1,24 +1,22 @@
 import React from 'react';
-import logo from './logo.svg';
+import { Routes, Route, Link } from 'react-router-dom';
+import AccountSelectionPage from './pages/AccountSelectionPage';
+import ConversationsPage from './pages/ConversationsPage';
+
 import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h2>Welcome to the messenger app!</h2>
+      <Link to="/">Account Selection</Link>
+      <br />
+      <Link to="/conversations">Conversations</Link>
+
+      <Routes>
+        <Route path="/" element={<AccountSelectionPage />} />
+        <Route path="/conversations" element={<ConversationsPage />} />
+      </Routes>
     </div>
   );
 }
