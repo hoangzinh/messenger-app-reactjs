@@ -14,7 +14,7 @@ function App() {
   return (
     <Layout className="layout">
       <Header>
-        <div className="logo" />
+        <div className="logo">Messenger App</div>
         <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
           <Menu.Item key="home" icon={<HomeOutlined />}>
             <Link to="/">Account Selection</Link>
