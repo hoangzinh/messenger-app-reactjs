@@ -13,7 +13,7 @@ const { Header, Content } = Layout;
 function App() {
   return (
     <Layout className="layout">
-      <Header>
+      <Header style={{ height: '65px' }}>
         <div className="logo">Messenger App</div>
         <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
           <Menu.Item key="home" icon={<HomeOutlined />}>
@@ -24,7 +24,7 @@ function App() {
           </Menu.Item>
         </Menu>
       </Header>
-      <Content style={{ padding: '0 50px' }}>
+      <Content style={{ padding: '0 50px', minHeight: 'calc(100vh - 64px)' }}>
         <Routes>
           <Route path="/" element={<AccountSelectionPage />} />
           <Route path="/conversations" element={<ConversationsPage />} />
