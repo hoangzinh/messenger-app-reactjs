@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 type Method = 'GET' | 'PUT' | 'POST' | 'DELETE';
 
@@ -20,21 +20,24 @@ const useApi = ({
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
-  const fetcher = () =>
-    fetch(endpoint, {
-      method: method,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-      .then((data) => data.json())
-      .then((data) => {
-        setData(data);
-        onComplete && onComplete(data);
+  const fetcher = useCallback(
+    () =>
+      fetch(endpoint, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
       })
-      .catch((error) => {
-        setError(error);
-        onFailed && onFailed(error);
-      });
+        .then((data) => data.json())
+        .then((data) => {
+          setData(data);
+          onComplete && onComplete(data);
+        })
+        .catch((error) => {
+          setError(error);
+          onFailed && onFailed(error);
+        }),
+    [body, method, endpoint, onComplete, onFailed]
+  );
 
   const isLoading: boolean = !error && !data;
 

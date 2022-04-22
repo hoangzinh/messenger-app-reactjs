@@ -16,7 +16,7 @@ const AccountSelectionPage = () => {
 
   useEffect(() => {
     fetcher();
-  }, []);
+  }, [fetcher]);
 
   if (error) {
     return <UnexpectedError />;
