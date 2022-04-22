@@ -1,5 +1,6 @@
 import React, { Key } from 'react';
-import { Skeleton, Switch, Card, Avatar } from 'antd';
+import { Card, Avatar } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
 const { Meta } = Card;
 
@@ -12,17 +13,28 @@ type AccountSelectionProps = {
   accounts: Array<Account>;
 };
 
-const AccountSelection = ({ accounts = [] }: AccountSelectionProps) => (
-  <ul>
-    {accounts.map(({ id, name }) => (
-      <Card style={{ marginTop: 16 }} key={id} hoverable>
-        <Meta
-          avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
-          title={name}
-        />
-      </Card>
-    ))}
-  </ul>
-);
+const AccountSelection = ({ accounts = [] }: AccountSelectionProps) => {
+  const navigate = useNavigate();
+  const goToConversation = (id: Key) => () =>
+    navigate(`/account/${id}/conversations`);
+
+  return (
+    <div>
+      {accounts.map(({ id, name }) => (
+        <Card
+          style={{ marginTop: 16 }}
+          key={id}
+          hoverable
+          onClick={goToConversation(id)}
+        >
+          <Meta
+            avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
+            title={name}
+          />
+        </Card>
+      ))}
+    </div>
+  );
+};
 
 export default AccountSelection;
