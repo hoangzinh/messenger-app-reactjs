@@ -28,7 +28,9 @@ const AccountSelection = ({ accounts = [] }: AccountSelectionProps) => {
           onClick={goToConversation(id)}
         >
           <Meta
-            avatar={<Avatar src="https://joeschmoe.io/api/v1/random" />}
+            avatar={
+              <Avatar src={`https://joeschmoe.io/api/v1/random?name=${name}`} />
+            }
             title={name}
           />
         </Card>
