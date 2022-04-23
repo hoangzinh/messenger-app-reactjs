@@ -1,6 +1,7 @@
-import React, { Key } from 'react';
+import React, { FunctionComponent, Key } from 'react';
 import { Card, Avatar } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import { isEmpty } from 'lodash/fp';
 
 const { Meta } = Card;
 
@@ -10,13 +11,21 @@ type Account = {
 };
 
 type AccountSelectionProps = {
-  accounts: Array<Account>;
+  accounts: Array<Account> | null;
 };
 
-const AccountSelection = ({ accounts = [] }: AccountSelectionProps) => {
+const EmptyAccount = () => <div>No account...</div>;
+
+const AccountSelection: FunctionComponent<AccountSelectionProps> = ({
+  accounts,
+}) => {
   const navigate = useNavigate();
   const goToConversation = (id: Key) => () =>
     navigate(`/account/${id}/conversations`);
+
+  if (accounts === null || isEmpty(accounts)) {
+    return <EmptyAccount />;
+  }
 
   return (
     <div>
