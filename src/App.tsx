@@ -17,7 +17,7 @@ function App() {
         <div className="logo">Messenger App</div>
         <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['home']}>
           <Menu.Item key="home" icon={<HomeOutlined />}>
-            <Link to="/">Account Selection</Link>
+            <Link to="/">Accounts</Link>
           </Menu.Item>
         </Menu>
       </Header>
