@@ -22,7 +22,7 @@ const AccountSelectionPage: FunctionComponent = () => {
   return (
     <div>
       <h2 style={{ textAlign: 'center' }}>Select an Account</h2>
-      <div style={{ width: '300px', margin: 'auto' }}>
+      <div style={{ width: '100%', maxWidth: '350px', margin: 'auto' }}>
         <Skeleton loading={isLoading} active avatar>
           <AccountSelection accounts={data} />
         </Skeleton>
