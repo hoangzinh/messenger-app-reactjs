@@ -21,7 +21,7 @@ function App() {
           </Menu.Item>
         </Menu>
       </Header>
-      <Content style={{ padding: '0 50px', minHeight: 'calc(100vh - 64px)' }}>
+      <Content style={{ padding: '0', minHeight: 'calc(100vh - 64px)' }}>
         <Routes>
           <Route path="/" element={<AccountSelectionPage />} />
           <Route
