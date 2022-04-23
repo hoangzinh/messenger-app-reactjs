@@ -2,7 +2,7 @@
 
 Principles and Design Patterns of React Programming - batch01 - group13
 
-[ ] Open multiple window chat
+[x] Open multiple window chat
 
 [ ] Send messages in chat box
 
@@ -19,5 +19,5 @@ https://messenger-app-reactjs.vercel.app/
 ## How to start
 
 ```
-yarn start
+npm start
 ```
