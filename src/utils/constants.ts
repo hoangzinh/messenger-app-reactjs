@@ -1,2 +1,2 @@
 export const API_DOMAIN: string =
-  'https://justcors.com/tl_9d29f5d/https://messenger-api-nextjs.herokuapp.com';
+  'https://justcors.com/tl_b99baf5/https://messenger-api-nextjs.herokuapp.com';
