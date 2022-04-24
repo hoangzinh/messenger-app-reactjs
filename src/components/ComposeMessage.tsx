@@ -26,7 +26,7 @@ const ComposeMessage: FunctionComponent<ComposeMessageProps> = ({
     setMessage('');
   };
   const handleKeyDown = (eve: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (eve.key === 'Enter') {
+    if (eve.key === 'Enter' && !eve.shiftKey) {
       eve.preventDefault();
       handleSubmitMessage();
     }
