@@ -8,10 +8,10 @@ const ConversationsPage = () => {
   const [activeConversation, setActiveConversation] = useState<string>();
 
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
+    <div style={{ display: 'flex', height: '100%' }}>
       <ConversationList setActiveConversation={setActiveConversation} />
       <Divider type="vertical" style={{ height: '100%' }} />
-      <div style={{ flex: 1 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
         {activeConversation ? (
           <Conversation key={activeConversation} id={activeConversation} />
         ) : null}
