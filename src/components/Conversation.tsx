@@ -5,6 +5,8 @@ import React, { FunctionComponent, useEffect } from 'react';
 
 import { API_DOMAIN } from '../utils/constants';
 import Message from './Message';
+import ComposeMessage from './ComposeMessage';
+
 import useApi from '../hooks/useApi';
 
 type ConversationType = {
@@ -38,6 +40,7 @@ const Conversation: FunctionComponent<ConversationType> = ({ id }) => {
           <Message key={id} sender={sender} text={text} />
         ))}
       </div>
+      {accountId && <ComposeMessage senderId={accountId} conversationId={id} />}
     </Skeleton>
   );
 };

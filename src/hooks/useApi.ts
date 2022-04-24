@@ -5,15 +5,17 @@ type Method = 'GET' | 'PUT' | 'POST' | 'DELETE';
 type ApiConfigs = {
   endpoint: RequestInfo;
   method?: Method;
-  body?: Object;
   onComplete?: (data: Object) => void;
   onFailed?: (error: Object) => void;
+};
+
+type fetcherOptions = {
+  body?: Object;
 };
 
 const useApi = ({
   endpoint,
   method = 'GET',
-  body,
   onComplete,
   onFailed,
 }: ApiConfigs) => {
@@ -21,7 +23,7 @@ const useApi = ({
   const [error, setError] = useState(null);
 
   const fetcher = useCallback(
-    () =>
+    ({ body }: fetcherOptions = {}) =>
       fetch(endpoint, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
@@ -36,7 +38,7 @@ const useApi = ({
           setError(error);
           onFailed && onFailed(error);
         }),
-    [body, method, endpoint, onComplete, onFailed]
+    [method, endpoint, onComplete, onFailed]
   );
 
   const isLoading: boolean = !error && !data;
