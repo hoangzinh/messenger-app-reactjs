@@ -34,6 +34,7 @@ const Conversation: FunctionComponent<ConversationType> = ({ id }) => {
           flexDirection: 'column-reverse',
           padding: '0 16px',
           flexGrow: 1,
+          overflow: 'auto',
         }}
       >
         {messages.map(({ id, sender, text }) => (

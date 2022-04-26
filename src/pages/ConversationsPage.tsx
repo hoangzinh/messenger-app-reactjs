@@ -8,9 +8,9 @@ const ConversationsPage = () => {
   const [activeConversation, setActiveConversation] = useState<string>();
 
   return (
-    <div style={{ display: 'flex', height: '100%' }}>
+    <div style={{ display: 'flex', height: '100%', alignItems: 'stretch' }}>
       <ConversationList setActiveConversation={setActiveConversation} />
-      <Divider type="vertical" style={{ height: '100%' }} />
+      <Divider type="vertical" style={{ height: '100%', margin: 0 }} />
       <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
         {activeConversation ? (
           <Conversation key={activeConversation} id={activeConversation} />
