@@ -1,6 +1,6 @@
 import { Avatar, Typography } from 'antd';
-import React, { FunctionComponent } from 'react';
 import { useParams } from 'react-router-dom';
+import { FunctionComponent } from 'react';
 
 import { MessageType } from './shared/types';
 
@@ -8,7 +8,7 @@ const { Text } = Typography;
 
 const Message: FunctionComponent<MessageType> = ({ sender, text }) => {
   const { id: currentAccountId } = useParams();
-  const isCurrentAccount = currentAccountId === sender.id;
+  const isCurrentAccount = currentAccountId === sender.id.toString();
 
   return (
     <div
