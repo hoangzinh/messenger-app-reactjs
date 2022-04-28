@@ -1,34 +1,48 @@
-import { Skeleton } from 'antd';
+import { Skeleton, Typography } from 'antd';
 import { get } from 'lodash';
 import { useParams } from 'react-router-dom';
-import React, { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect } from 'react';
 
 import { API_DOMAIN } from '../utils/constants';
-import Message from './Message';
+import { MessageType } from './shared/types';
 import ComposeMessage from './ComposeMessage';
-
+import Message from './Message';
 import useApi from '../hooks/useApi';
+import useScroll from '../hooks/useScroll';
+
+const { Text } = Typography;
 
 type ConversationType = {
   id: string;
 };
 
+type ConversationDataType = {
+  rows: Array<MessageType>;
+};
+
 const Conversation: FunctionComponent<ConversationType> = ({ id }) => {
   const { id: accountId } = useParams();
 
-  const { fetcher, data, isLoading } = useApi({
-    endpoint: `${API_DOMAIN}/api/account/${accountId}/conversation/${id}/messages`,
+  const { fetcher, data, isLoading } = useApi<ConversationDataType>({
+    endpoint: `${API_DOMAIN}/api/account/${accountId}/conversation/${id}/messages?pageSize=10`,
   });
+
+  const canLoadMore = get(data, 'cursor_prev') && !isLoading;
+
+  const { loadMoreRef, containerRef } = useScroll(() =>
+    console.log('Fetch more')
+  );
 
   useEffect(() => {
     fetcher();
   }, [fetcher]);
 
-  const messages = get(data, 'rows', []);
+  const messages = data?.rows || [];
 
   return (
     <Skeleton loading={isLoading} active>
       <div
+        ref={containerRef}
         style={{
           display: 'flex',
           flexDirection: 'column-reverse',
@@ -38,8 +52,13 @@ const Conversation: FunctionComponent<ConversationType> = ({ id }) => {
         }}
       >
         {messages.map(({ id, sender, text }) => (
-          <Message key={id} sender={sender} text={text} />
+          <Message key={id} id={id} sender={sender} text={text} />
         ))}
+        {canLoadMore ? (
+          <div ref={loadMoreRef} style={{ textAlign: 'center' }}>
+            <Text>Loading old message ...</Text>
+          </div>
+        ) : null}
       </div>
       {accountId && <ComposeMessage senderId={accountId} conversationId={id} />}
     </Skeleton>
