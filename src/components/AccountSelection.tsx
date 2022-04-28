@@ -1,14 +1,11 @@
-import React, { FunctionComponent, Key } from 'react';
 import { Card, Avatar } from 'antd';
-import { useNavigate } from 'react-router-dom';
 import { isEmpty } from 'lodash/fp';
+import { useNavigate } from 'react-router-dom';
+import { FunctionComponent, Key } from 'react';
+
+import { Account } from './shared/types';
 
 const { Meta } = Card;
-
-type Account = {
-  id: Key;
-  name: String;
-};
 
 type AccountSelectionProps = {
   accounts: Array<Account> | null;

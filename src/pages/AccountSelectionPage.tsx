@@ -1,13 +1,14 @@
-import React, { FunctionComponent, useEffect } from 'react';
-import AccountSelection from '../components/AccountSelection';
 import { Skeleton } from 'antd';
-import UnexpectedError from '../components/UnexpectedError';
+import { FunctionComponent, useEffect } from 'react';
 
-import useApi from '../hooks/useApi';
 import { API_DOMAIN } from '../utils/constants';
+import { Account } from '../components/shared/types';
+import AccountSelection from '../components/AccountSelection';
+import UnexpectedError from '../components/UnexpectedError';
+import useApi from '../hooks/useApi';
 
 const AccountSelectionPage: FunctionComponent = () => {
-  const { fetcher, data, error, isLoading } = useApi({
+  const { fetcher, data, error, isLoading } = useApi<Array<Account>>({
     endpoint: `${API_DOMAIN}/api/accounts`,
   });
 

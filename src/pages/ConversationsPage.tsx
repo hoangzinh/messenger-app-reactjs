@@ -1,5 +1,5 @@
 import { Divider } from 'antd';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import Conversation from '../components/Conversation';
 import ConversationList from '../components/ConversationList';

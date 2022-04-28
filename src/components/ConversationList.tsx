@@ -1,10 +1,10 @@
 import { Avatar, Skeleton, Typography } from 'antd';
 import { get } from 'lodash';
 import { useParams } from 'react-router-dom';
-import React, { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect } from 'react';
 
 import { API_DOMAIN } from '../utils/constants';
-import { MessageType, ParticipantType } from './shared/types';
+import { ConversationType, MessageType, ParticipantType } from './shared/types';
 import useApi from '../hooks/useApi';
 
 const { Title, Text } = Typography;
@@ -55,11 +55,15 @@ type ConversationListType = {
   setActiveConversation: (id: string) => void;
 };
 
+type ConversationListData = {
+  rows: Array<ConversationType>;
+};
+
 const ConversationList: FunctionComponent<ConversationListType> = ({
   setActiveConversation,
 }) => {
   const { id: currentAccountId } = useParams();
-  const { fetcher, data, isLoading } = useApi({
+  const { fetcher, data, isLoading } = useApi<ConversationListData>({
     endpoint: `${API_DOMAIN}/api/account/${currentAccountId}/conversations`,
   });
 

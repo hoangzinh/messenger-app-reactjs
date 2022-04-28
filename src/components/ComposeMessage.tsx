@@ -14,7 +14,7 @@ const ComposeMessage: FunctionComponent<ComposeMessageProps> = ({
   conversationId,
 }) => {
   const [message, setMessage] = useState('');
-  const { fetcher: sendNewMessageToServer } = useApi({
+  const { fetcher: sendNewMessageToServer, isLoading } = useApi({
     endpoint: `${API_DOMAIN}/api/account/${senderId}/conversation/${conversationId}/messages`,
     method: 'POST',
   });
@@ -48,6 +48,7 @@ const ComposeMessage: FunctionComponent<ComposeMessageProps> = ({
           type="primary"
           icon={<SendOutlined />}
           onClick={handleSubmitMessage}
+          loading={isLoading}
         >
           Send
         </Button>
