@@ -1,9 +1,9 @@
 import { Skeleton, Typography } from 'antd';
 import { get } from 'lodash';
 import { useParams } from 'react-router-dom';
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 
-import { API_DOMAIN } from '../utils/constants';
+import { API_DOMAIN, POLLING_TIME_MS } from '../utils/constants';
 import { MessageType } from './shared/types';
 import ComposeMessage from './ComposeMessage';
 import Message from './Message';
@@ -21,26 +21,31 @@ type ConversationDataType = {
 };
 
 const Conversation: FunctionComponent<ConversationType> = ({ id }) => {
+  const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const { id: accountId } = useParams();
 
   const { fetcher, data, isLoading } = useApi<ConversationDataType>({
     endpoint: `${API_DOMAIN}/api/account/${accountId}/conversation/${id}/messages?pageSize=10`,
+    onComplete: () => setFirstLoad(false),
   });
-
-  const canLoadMore = get(data, 'cursor_prev') && !isLoading;
 
   const { loadMoreRef, containerRef } = useScroll(() =>
     console.log('Fetch more')
   );
 
   useEffect(() => {
-    fetcher();
+    const timer = setInterval(() => fetcher(), POLLING_TIME_MS);
+
+    return () => {
+      clearInterval(timer);
+    };
   }, [fetcher]);
 
   const messages = data?.rows || [];
+  const canLoadMore = get(data, 'cursor_prev') && !isLoading;
 
   return (
-    <Skeleton loading={isLoading} active>
+    <Skeleton loading={isLoading && firstLoad} active>
       <div
         ref={containerRef}
         style={{

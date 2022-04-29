@@ -13,7 +13,7 @@ const ComposeMessage: FunctionComponent<ComposeMessageProps> = ({
   senderId,
   conversationId,
 }) => {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState<string>('');
   const { fetcher: sendNewMessageToServer, isLoading } = useApi({
     endpoint: `${API_DOMAIN}/api/account/${senderId}/conversation/${conversationId}/messages`,
     method: 'POST',
