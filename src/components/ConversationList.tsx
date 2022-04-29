@@ -39,7 +39,7 @@ const ConversationItem: FunctionComponent<ConversationItemType> = ({
     >
       <div>
         <Avatar
-          src={`https://joeschmoe.io/api/v1/random?name=${otherParticipants[0].name}`}
+          src={`https://i.pravatar.cc/100?u=${otherParticipants[0].name}`}
           size={50}
         />
       </div>
