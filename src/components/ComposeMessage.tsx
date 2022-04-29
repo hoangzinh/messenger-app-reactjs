@@ -7,11 +7,13 @@ import { API_DOMAIN } from '../utils/constants';
 type ComposeMessageProps = {
   senderId: String;
   conversationId: String;
+  onSentMessage: Function;
 };
 
 const ComposeMessage: FunctionComponent<ComposeMessageProps> = ({
   senderId,
   conversationId,
+  onSentMessage,
 }) => {
   const [message, setMessage] = useState<string>('');
   const { fetcher: sendNewMessageToServer, isLoading } = useApi({
@@ -24,6 +26,7 @@ const ComposeMessage: FunctionComponent<ComposeMessageProps> = ({
 
     sendNewMessageToServer({ body: { text: message } });
     setMessage('');
+    onSentMessage();
   };
   const handleKeyDown = (eve: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (eve.key === 'Enter' && !eve.shiftKey) {
