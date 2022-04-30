@@ -1,18 +1,12 @@
 import { Skeleton, Typography, PageHeader } from 'antd';
 import { get } from 'lodash';
-import {
-  FunctionComponent,
-  createRef,
-  useCallback,
-  useEffect,
-  useState,
-} from 'react';
+import { FunctionComponent, createRef, useCallback, useEffect } from 'react';
 
 import { API_DOMAIN, POLLING_TIME_MS } from '../utils/constants';
 import { MessageType, ParticipantType } from './shared/types';
 import ComposeMessage from './ComposeMessage';
 import Message from './Message';
-import useApi from '../hooks/useApi';
+import useApiWithPolling from '../hooks/useApiWithPolling';
 import useScroll from '../hooks/useScroll';
 
 const { Text } = Typography;
@@ -33,23 +27,21 @@ const Conversation: FunctionComponent<ConversationType> = ({
   participants,
 }) => {
   const messagesEndRef = createRef<HTMLDivElement>();
-  const [firstLoad, setFirstLoad] = useState<boolean>(true);
 
-  const { fetcher, data, isLoading } = useApi<ConversationDataType>({
-    endpoint: `${API_DOMAIN}/api/account/${accountId}/conversation/${id}/messages?pageSize=10`,
-    onComplete: () => setFirstLoad(false),
-  });
+  const { fetcher, data, isLoading, firstLoad } =
+    useApiWithPolling<ConversationDataType>(
+      {
+        endpoint: `${API_DOMAIN}/api/account/${accountId}/conversation/${id}/messages?pageSize=10`,
+      },
+      POLLING_TIME_MS
+    );
 
   const { loadMoreRef, containerRef } = useScroll(() =>
     console.log('Fetch more')
   );
 
   useEffect(() => {
-    const timer = setInterval(() => fetcher(), POLLING_TIME_MS);
-
-    return () => {
-      clearInterval(timer);
-    };
+    fetcher();
   }, [fetcher]);
 
   const onSentMessage = useCallback(() => {
