@@ -34,9 +34,7 @@ const AccountSelection: FunctionComponent<AccountSelectionProps> = ({
           onClick={goToConversation(id)}
         >
           <Meta
-            avatar={
-              <Avatar src={`https://joeschmoe.io/api/v1/random?name=${name}`} />
-            }
+            avatar={<Avatar src={`https://i.pravatar.cc/100?u=${name}`} />}
             title={name}
           />
         </Card>

@@ -18,10 +18,7 @@ const Message: FunctionComponent<MessageType> = ({ sender, text }) => {
         padding: '16px 0',
       }}
     >
-      <Avatar
-        size={50}
-        src={`https://joeschmoe.io/api/v1/random?name=${sender.name}`}
-      />
+      <Avatar size={50} src={`https://i.pravatar.cc/100?u=${sender.name}`} />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {!isCurrentAccount ? (
           <Text

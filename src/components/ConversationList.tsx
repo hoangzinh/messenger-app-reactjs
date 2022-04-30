@@ -1,9 +1,9 @@
 import { Avatar, Skeleton, Typography } from 'antd';
 import { get } from 'lodash';
 import { useParams } from 'react-router-dom';
-import { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 
-import { API_DOMAIN } from '../utils/constants';
+import { API_DOMAIN, POLLING_TIME_MS } from '../utils/constants';
 import { ConversationType, MessageType, ParticipantType } from './shared/types';
 import useApi from '../hooks/useApi';
 
@@ -39,7 +39,7 @@ const ConversationItem: FunctionComponent<ConversationItemType> = ({
     >
       <div>
         <Avatar
-          src={`https://joeschmoe.io/api/v1/random?name=${otherParticipants[0].name}`}
+          src={`https://i.pravatar.cc/100?u=${otherParticipants[0].name}`}
           size={50}
         />
       </div>
@@ -52,7 +52,7 @@ const ConversationItem: FunctionComponent<ConversationItemType> = ({
 };
 
 type ConversationListType = {
-  setActiveConversation: (id: string) => void;
+  setActiveConversation: (params: ConversationType) => void;
 };
 
 type ConversationListData = {
@@ -62,28 +62,37 @@ type ConversationListData = {
 const ConversationList: FunctionComponent<ConversationListType> = ({
   setActiveConversation,
 }) => {
+  const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const { id: currentAccountId } = useParams();
   const { fetcher, data, isLoading } = useApi<ConversationListData>({
     endpoint: `${API_DOMAIN}/api/account/${currentAccountId}/conversations`,
+    onComplete: () => setFirstLoad(false),
   });
 
   useEffect(() => {
-    fetcher();
+    const timer = setInterval(() => fetcher(), POLLING_TIME_MS);
+
+    return () => {
+      clearInterval(timer);
+    };
   }, [fetcher]);
 
   const conversations = get(data, 'rows', []);
 
   return (
     <div style={{ width: 360, padding: 16 }}>
-      <Skeleton loading={isLoading} active avatar>
-        {conversations.map(({ id, participants, lastMessage }) => (
-          <ConversationItem
-            key={id}
-            participants={participants}
-            lastMessage={lastMessage}
-            onClick={() => setActiveConversation(id)}
-          />
-        ))}
+      <Skeleton loading={isLoading && firstLoad} active avatar>
+        {conversations.map((conversation) => {
+          const { id, participants, lastMessage } = conversation;
+          return (
+            <ConversationItem
+              key={id}
+              participants={participants}
+              lastMessage={lastMessage}
+              onClick={() => setActiveConversation(conversation)}
+            />
+          );
+        })}
       </Skeleton>
     </div>
   );

@@ -3,16 +3,26 @@ import { useCallback, useReducer } from 'react';
 
 type Method = 'GET' | 'PUT' | 'POST' | 'DELETE';
 
-type ApiConfigs = {
-  endpoint: RequestInfo;
+type Endpoint =
+  | {
+      endpoint?: RequestInfo;
+      endpointGenerator: (params?: any) => RequestInfo;
+    }
+  | {
+      endpoint: RequestInfo;
+      endpointGenerator?: (params?: any) => RequestInfo;
+    };
+
+type ApiConfigs<T> = Endpoint & {
   method?: Method;
-  onComplete?: (data: Object) => void;
+  onComplete?: (data: T) => void;
   onFailed?: (error: Object) => void;
 };
 
 type fetcherOptions = {
   params?: Record<string, unknown>;
   withPagination?: boolean;
+  endpointParams?: Object;
 };
 
 type ApiState<T> = {
@@ -33,9 +43,7 @@ type ApiAction<T> =
   | { type: 'fetch_complete'; payload: T }
   | { type: 'fetch_failed'; payload: Error };
 
-const generateEndpointWithParams = (
-  params: Record<string, unknown> | undefined
-) =>
+const generateEndpointParams = (params: Record<string, unknown> | undefined) =>
   keys(params).reduce((result, key, index) => {
     return index === 0
       ? `${result}?${key}=${get(params, key, '')}`
@@ -43,10 +51,11 @@ const generateEndpointWithParams = (
   }, '');
 const useApi = <T>({
   endpoint,
+  endpointGenerator,
   method = 'GET',
   onComplete,
   onFailed,
-}: ApiConfigs) => {
+}: ApiConfigs<T>) => {
   const initialState: ApiState<T> = {
     currentApi: { data: null, loading: false, error: null },
     paginatedApi: { data: [] },
@@ -97,11 +106,17 @@ const useApi = <T>({
   const fetcher = useCallback(
     ({ params, withPagination = false }: fetcherOptions = {}) => {
       dispatch({ type: 'fetch_start', payload: { withPagination } });
+      const requestUrl = endpointGenerator
+        ? endpointGenerator(params || {})
+        : endpoint;
+
       const composedEndpoint =
         method === 'GET'
-          ? `${endpoint}${generateEndpointWithParams(params)}`
+          ? `${requestUrl}${generateEndpointParams(params)}`
           : endpoint;
 
+      dispatch({ type: 'fetch_start', payload: { withPagination } });
+      // @ts-expect-error
       fetch(composedEndpoint, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
@@ -120,7 +135,7 @@ const useApi = <T>({
           onFailed && onFailed(error);
         });
     },
-    [method, endpoint, onComplete, onFailed]
+    [method, endpoint, onComplete, onFailed, endpointGenerator]
   );
 
   const { data, loading: isLoading, error } = state.currentApi;
