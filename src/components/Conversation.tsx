@@ -1,7 +1,7 @@
-import { Skeleton, Typography } from 'antd';
-import { get } from 'lodash';
+import { Typography } from 'antd';
+import { pick, flatMap, isEmpty, last, map } from 'lodash';
 import { useParams } from 'react-router-dom';
-import { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent, useEffect, useMemo } from 'react';
 
 import { API_DOMAIN } from '../utils/constants';
 import { MessageType } from './shared/types';
@@ -18,50 +18,88 @@ type ConversationType = {
 
 type ConversationDataType = {
   rows: Array<MessageType>;
+  cursor_prev: string;
+  cursor_next: string;
+  sort: string;
 };
+
+const pageSize = 10;
 
 const Conversation: FunctionComponent<ConversationType> = ({ id }) => {
   const { id: accountId } = useParams();
 
-  const { fetcher, data, isLoading } = useApi<ConversationDataType>({
-    endpoint: `${API_DOMAIN}/api/account/${accountId}/conversation/${id}/messages?pageSize=10`,
+  const { fetcher, data, isLoading, paginatedData } =
+    useApi<ConversationDataType>({
+      endpoint: `${API_DOMAIN}/api/account/${accountId}/conversation/${id}/messages`,
+    });
+
+  const { cursor_prev, cursor_next, sort } = pick(data, [
+    'cursor_prev',
+    'cursor_next',
+    'sort',
+  ]);
+
+  const { loadMoreRef, containerRef } = useScroll(() => {
+    if (!isEmpty(last(paginatedData)) && !isLoading) {
+      if (sort === 'OLDEST_FIRST') {
+        fetcher({
+          params: { cursor: cursor_next, pageSize },
+          withPagination: true,
+        });
+      } else {
+        fetcher({
+          params: { cursor: cursor_prev, pageSize },
+          withPagination: true,
+        });
+      }
+    }
   });
 
-  const canLoadMore = get(data, 'cursor_prev') && !isLoading;
-
-  const { loadMoreRef, containerRef } = useScroll(() =>
-    console.log('Fetch more')
-  );
+  const messages = useMemo(() => {
+    const sortedData = map(paginatedData, ({ rows, sort }) => ({
+      ...paginatedData,
+      rows: sort === 'OLDEST_FIRST' ? rows.reverse() : rows,
+    }));
+    return flatMap(sortedData, 'rows');
+  }, [paginatedData]);
 
   useEffect(() => {
-    fetcher();
+    fetcher({ withPagination: true, params: { pageSize } });
   }, [fetcher]);
 
-  const messages = data?.rows || [];
-
   return (
-    <Skeleton loading={isLoading} active>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'hidden',
+        height: '100%',
+      }}
+    >
       <div
         ref={containerRef}
+        id="message"
         style={{
           display: 'flex',
           flexDirection: 'column-reverse',
           padding: '0 16px',
-          flexGrow: 1,
+          flex: 1,
           overflow: 'auto',
         }}
       >
         {messages.map(({ id, sender, text }) => (
           <Message key={id} id={id} sender={sender} text={text} />
         ))}
-        {canLoadMore ? (
+        {!isEmpty(last(paginatedData)) ? (
           <div ref={loadMoreRef} style={{ textAlign: 'center' }}>
             <Text>Loading old message ...</Text>
           </div>
         ) : null}
       </div>
-      {accountId && <ComposeMessage senderId={accountId} conversationId={id} />}
-    </Skeleton>
+      {accountId ? (
+        <ComposeMessage senderId={accountId} conversationId={id} />
+      ) : null}
+    </div>
   );
 };
 

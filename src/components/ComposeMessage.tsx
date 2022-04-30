@@ -22,7 +22,7 @@ const ComposeMessage: FunctionComponent<ComposeMessageProps> = ({
   const handleSubmitMessage = () => {
     if (!message) return null;
 
-    sendNewMessageToServer({ body: { text: message } });
+    sendNewMessageToServer({ params: { text: message } });
     setMessage('');
   };
   const handleKeyDown = (eve: React.KeyboardEvent<HTMLTextAreaElement>) => {

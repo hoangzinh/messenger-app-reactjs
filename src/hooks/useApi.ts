@@ -1,4 +1,4 @@
-import { unionBy } from 'lodash';
+import { unionBy, keys, get } from 'lodash';
 import { useCallback, useReducer } from 'react';
 
 type Method = 'GET' | 'PUT' | 'POST' | 'DELETE';
@@ -11,7 +11,7 @@ type ApiConfigs = {
 };
 
 type fetcherOptions = {
-  body?: Object;
+  params?: Record<string, unknown>;
   withPagination?: boolean;
 };
 
@@ -21,7 +21,7 @@ type ApiState<T> = {
     loading: boolean;
     error: Error | null;
   };
-  paginatedApi: { data: Array<unknown> };
+  paginatedApi: { data: Array<T> };
   withPagination: boolean;
 };
 
@@ -33,6 +33,14 @@ type ApiAction<T> =
   | { type: 'fetch_complete'; payload: T }
   | { type: 'fetch_failed'; payload: Error };
 
+const generateEndpointWithParams = (
+  params: Record<string, unknown> | undefined
+) =>
+  keys(params).reduce((result, key, index) => {
+    return index === 0
+      ? `${result}?${key}=${get(params, key, '')}`
+      : `${result}&${key}=${get(params, key, '')}`;
+  }, '');
 const useApi = <T>({
   endpoint,
   method = 'GET',
@@ -87,12 +95,17 @@ const useApi = <T>({
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const fetcher = useCallback(
-    ({ body, withPagination = false }: fetcherOptions = {}) => {
+    ({ params, withPagination = false }: fetcherOptions = {}) => {
       dispatch({ type: 'fetch_start', payload: { withPagination } });
-      fetch(endpoint, {
+      const composedEndpoint =
+        method === 'GET'
+          ? `${endpoint}${generateEndpointWithParams(params)}`
+          : endpoint;
+
+      fetch(composedEndpoint, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: method !== 'GET' ? JSON.stringify(params) : undefined,
       })
         .then((data) => data.json())
         .then((data) => {
