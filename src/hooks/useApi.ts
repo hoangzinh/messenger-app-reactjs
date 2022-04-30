@@ -13,7 +13,7 @@ type Endpoint =
       endpointGenerator?: (params?: any) => RequestInfo;
     };
 
-type ApiConfigs<T> = Endpoint & {
+export type ApiConfigs<T> = Endpoint & {
   method?: Method;
   onComplete?: (data: T) => void;
   onFailed?: (error: Object) => void;

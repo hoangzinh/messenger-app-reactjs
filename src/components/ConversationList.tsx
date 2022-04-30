@@ -1,11 +1,11 @@
 import { Avatar, Skeleton, Typography } from 'antd';
 import { get } from 'lodash';
 import { useParams } from 'react-router-dom';
-import { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useEffect } from 'react';
 
 import { API_DOMAIN, POLLING_TIME_MS } from '../utils/constants';
 import { ConversationType, MessageType, ParticipantType } from './shared/types';
-import useApi from '../hooks/useApi';
+import useApiWithPolling from '../hooks/useApiWithPolling';
 
 const { Title, Text } = Typography;
 
@@ -62,22 +62,18 @@ type ConversationListData = {
 const ConversationList: FunctionComponent<ConversationListType> = ({
   setActiveConversation,
 }) => {
-  const [firstLoad, setFirstLoad] = useState<boolean>(true);
   const { id: currentAccountId } = useParams();
-  const { fetcher, data, isLoading } = useApi<ConversationListData>({
-    endpoint: `${API_DOMAIN}/api/account/${currentAccountId}/conversations`,
-    onComplete: () => setFirstLoad(false),
-  });
+  const { fetcher, data, isLoading, firstLoad } =
+    useApiWithPolling<ConversationListData>(
+      {
+        endpoint: `${API_DOMAIN}/api/account/${currentAccountId}/conversations`,
+      },
+      POLLING_TIME_MS
+    );
 
   useEffect(() => {
-    if (!isLoading) {
-      const timer = setInterval(() => fetcher(), POLLING_TIME_MS);
-
-      return () => {
-        clearInterval(timer);
-      };
-    }
-  }, [fetcher, isLoading]);
+    fetcher();
+  }, [fetcher]);
 
   const conversations = get(data, 'rows', []);
 

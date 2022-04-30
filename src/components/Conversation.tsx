@@ -39,7 +39,7 @@ const Conversation: FunctionComponent<ConversationType> = ({
   participants,
 }) => {
   const messagesEndRef = createRef<HTMLDivElement>();
-  const [firstLoad, setFirstLoad] = useState<boolean>(true);
+  const [firstLoad, setFirstLoad] = useState(false);
 
   const { fetcher, data, isLoading, paginatedData } =
     useApi<ConversationDataType>({
