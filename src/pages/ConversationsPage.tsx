@@ -6,8 +6,11 @@ import Conversation from '../components/Conversation';
 import ConversationList from '../components/ConversationList';
 import UnexpectedError from '../components/UnexpectedError';
 
+import { ConversationType } from '../components/shared/types';
+
 const ConversationsPage = () => {
-  const [activeConversation, setActiveConversation] = useState<string>();
+  const [activeConversation, setActiveConversation] =
+    useState<ConversationType | null>(null);
   const { id: accountId } = useParams();
 
   if (!accountId) {
@@ -21,9 +24,10 @@ const ConversationsPage = () => {
       <div style={{ display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
         {activeConversation ? (
           <Conversation
-            key={activeConversation}
-            id={activeConversation}
+            key={activeConversation.id}
+            id={activeConversation.id}
             accountId={accountId}
+            participants={activeConversation.participants}
           />
         ) : null}
       </div>

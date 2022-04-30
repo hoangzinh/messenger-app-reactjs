@@ -52,7 +52,7 @@ const ConversationItem: FunctionComponent<ConversationItemType> = ({
 };
 
 type ConversationListType = {
-  setActiveConversation: (id: string) => void;
+  setActiveConversation: (params: ConversationType) => void;
 };
 
 type ConversationListData = {
@@ -82,14 +82,17 @@ const ConversationList: FunctionComponent<ConversationListType> = ({
   return (
     <div style={{ width: 360, padding: 16 }}>
       <Skeleton loading={isLoading && firstLoad} active avatar>
-        {conversations.map(({ id, participants, lastMessage }) => (
-          <ConversationItem
-            key={id}
-            participants={participants}
-            lastMessage={lastMessage}
-            onClick={() => setActiveConversation(id)}
-          />
-        ))}
+        {conversations.map((conversation) => {
+          const { id, participants, lastMessage } = conversation;
+          return (
+            <ConversationItem
+              key={id}
+              participants={participants}
+              lastMessage={lastMessage}
+              onClick={() => setActiveConversation(conversation)}
+            />
+          );
+        })}
       </Skeleton>
     </div>
   );
