@@ -4,9 +4,9 @@ Principles and Design Patterns of React Programming - batch01 - group13
 
 [x] Open multiple window chat
 
-[ ] Send messages in chat box
+[x] Send messages in chat box
 
-[ ] Show recent messages
+[x] Show recent messages
 
 [ ] Scrolling upward to load previous messages
 
