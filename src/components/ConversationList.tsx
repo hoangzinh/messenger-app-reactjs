@@ -70,12 +70,14 @@ const ConversationList: FunctionComponent<ConversationListType> = ({
   });
 
   useEffect(() => {
-    const timer = setInterval(() => fetcher(), POLLING_TIME_MS);
+    if (!isLoading) {
+      const timer = setInterval(() => fetcher(), POLLING_TIME_MS);
 
-    return () => {
-      clearInterval(timer);
-    };
-  }, [fetcher]);
+      return () => {
+        clearInterval(timer);
+      };
+    }
+  }, [fetcher, isLoading]);
 
   const conversations = get(data, 'rows', []);
 

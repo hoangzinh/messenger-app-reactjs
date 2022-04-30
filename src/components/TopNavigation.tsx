@@ -23,7 +23,7 @@ const TopNavigation: FunctionComponent = () => {
 
   useEffect(() => {
     if (accountId) {
-      fetcher({ endpointParams: { accountId: accountId } });
+      fetcher({ params: { accountId: accountId } });
     } else {
       setName(null);
     }

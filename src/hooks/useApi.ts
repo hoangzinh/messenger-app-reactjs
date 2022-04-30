@@ -1,4 +1,4 @@
-import { unionBy, keys, get } from 'lodash';
+import { unionBy, keys, get, map } from 'lodash';
 import { useCallback, useReducer } from 'react';
 
 type Method = 'GET' | 'PUT' | 'POST' | 'DELETE';
@@ -49,6 +49,7 @@ const generateEndpointParams = (params: Record<string, unknown> | undefined) =>
       ? `${result}?${key}=${get(params, key, '')}`
       : `${result}&${key}=${get(params, key, '')}`;
   }, '');
+
 const useApi = <T>({
   endpoint,
   endpointGenerator,

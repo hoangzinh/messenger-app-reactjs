@@ -1,5 +1,5 @@
 import { Skeleton, Typography, PageHeader } from 'antd';
-import { pick, flatMap, isEmpty, last, map } from 'lodash';
+import { pick, flatMap, isEmpty, last, get, unionBy } from 'lodash';
 import React, {
   FunctionComponent,
   createRef,
@@ -47,6 +47,14 @@ const Conversation: FunctionComponent<ConversationType> = ({
       onComplete: () => setFirstLoad(false),
     });
 
+  const {
+    fetcher: pollNewData,
+    isLoading: isPolling,
+    paginatedData: pollingPaginatingData,
+  } = useApi<ConversationDataType>({
+    endpoint: `${API_DOMAIN}/api/account/${accountId}/conversation/${id}/messages`,
+  });
+
   const { cursor_prev, cursor_next, sort } = pick(data, [
     'cursor_prev',
     'cursor_next',
@@ -54,7 +62,7 @@ const Conversation: FunctionComponent<ConversationType> = ({
   ]);
 
   const { loadMoreRef, containerRef } = useScroll(() => {
-    if (!isEmpty(last(paginatedData)) && !isLoading) {
+    if (!isEmpty(get(last(paginatedData), 'rows')) && !isLoading) {
       if (sort === 'OLDEST_FIRST') {
         fetcher({
           params: { cursor: cursor_next, pageSize },
@@ -70,15 +78,21 @@ const Conversation: FunctionComponent<ConversationType> = ({
   });
 
   useEffect(() => {
-    const timer = setInterval(
-      () => fetcher({ withPagination: true, params: { pageSize } }),
-      POLLING_TIME_MS
-    );
+    fetcher({ withPagination: true, params: { pageSize } });
+  }, []);
 
-    return () => {
-      clearInterval(timer);
-    };
-  }, [fetcher]);
+  useEffect(() => {
+    if (firstLoad === false && !isPolling && !isLoading) {
+      const timer = setInterval(
+        () => pollNewData({ withPagination: true, params: { pageSize } }),
+        POLLING_TIME_MS
+      );
+
+      return () => {
+        clearInterval(timer);
+      };
+    }
+  }, [pollNewData, firstLoad, isPolling, isLoading]);
 
   const onSentMessage = useCallback(() => {
     if (messagesEndRef.current) {
@@ -87,12 +101,16 @@ const Conversation: FunctionComponent<ConversationType> = ({
   }, [messagesEndRef]);
 
   const messages = useMemo(() => {
-    const sortedData = map(paginatedData, ({ rows, sort }) => ({
-      ...paginatedData,
-      rows: sort === 'OLDEST_FIRST' ? rows.reverse() : rows,
-    }));
-    return flatMap(sortedData, 'rows');
-  }, [paginatedData]);
+    const sorted = paginatedData.map((item) =>
+      item.sort === 'OLDEST_FIRST'
+        ? { ...item, rows: [...item.rows].reverse() }
+        : item
+    );
+    const paginatingData = flatMap(sorted, 'rows');
+    const pollingData = flatMap([...pollingPaginatingData].reverse(), 'rows');
+
+    return unionBy(pollingData, paginatingData, 'id');
+  }, [paginatedData, pollingPaginatingData]);
 
   return (
     <>
@@ -120,7 +138,7 @@ const Conversation: FunctionComponent<ConversationType> = ({
           {messages.map(({ id, sender, text }) => (
             <Message key={id} id={id} sender={sender} text={text} />
           ))}
-          {isEmpty(last(paginatedData)) ? (
+          {!isEmpty(get(last(paginatedData), 'rows')) ? (
             <div ref={loadMoreRef} style={{ textAlign: 'center' }}>
               <Text>Loading old message ...</Text>
             </div>

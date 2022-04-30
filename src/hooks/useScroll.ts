@@ -35,7 +35,6 @@ const useScroll = (onLoadMore: () => void) => {
         const [entry] = entries;
 
         if (entry?.isIntersecting) {
-          console.log('intersecting');
           setVisible(true);
         } else {
           setVisible(false);
