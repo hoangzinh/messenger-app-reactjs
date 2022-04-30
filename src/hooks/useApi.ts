@@ -3,16 +3,26 @@ import { useCallback, useReducer } from 'react';
 
 type Method = 'GET' | 'PUT' | 'POST' | 'DELETE';
 
-type ApiConfigs = {
-  endpoint: RequestInfo;
+type Endpoint =
+  | {
+      endpoint?: RequestInfo;
+      endpointGenerator: (params?: any) => RequestInfo;
+    }
+  | {
+      endpoint: RequestInfo;
+      endpointGenerator?: (params?: any) => RequestInfo;
+    };
+
+type ApiConfigs<T> = Endpoint & {
   method?: Method;
-  onComplete?: (data: Object) => void;
+  onComplete?: (data: T) => void;
   onFailed?: (error: Object) => void;
 };
 
 type fetcherOptions = {
   body?: Object;
   withPagination?: boolean;
+  endpointParams?: Object;
 };
 
 type ApiState<T> = {
@@ -35,10 +45,11 @@ type ApiAction<T> =
 
 const useApi = <T>({
   endpoint,
+  endpointGenerator,
   method = 'GET',
   onComplete,
   onFailed,
-}: ApiConfigs) => {
+}: ApiConfigs<T>) => {
   const initialState: ApiState<T> = {
     currentApi: { data: null, loading: false, error: null },
     paginatedApi: { data: [] },
@@ -87,9 +98,14 @@ const useApi = <T>({
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const fetcher = useCallback(
-    ({ body, withPagination = false }: fetcherOptions = {}) => {
+    ({ body, endpointParams, withPagination = false }: fetcherOptions = {}) => {
+      const requestUrl = endpointGenerator
+        ? endpointGenerator(endpointParams || {})
+        : endpoint;
+
       dispatch({ type: 'fetch_start', payload: { withPagination } });
-      fetch(endpoint, {
+      // @ts-expect-error
+      fetch(requestUrl, {
         method: method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -107,7 +123,7 @@ const useApi = <T>({
           onFailed && onFailed(error);
         });
     },
-    [method, endpoint, onComplete, onFailed]
+    [method, endpoint, onComplete, onFailed, endpointGenerator]
   );
 
   const { data, loading: isLoading, error } = state.currentApi;
