@@ -19,7 +19,7 @@ const useApiWithPolling = <T>(
     ),
   });
 
-  const { fetcher } = useApiResult;
+  const { fetcher, isLoading } = useApiResult;
 
   useEffect(() => {
     if (firstLoad) {
@@ -33,14 +33,16 @@ const useApiWithPolling = <T>(
       timer = setTimeout(callFetcher, polling_time_ms);
     };
 
-    callFetcher();
+    if (!isLoading) {
+      callFetcher();
+    }
 
     return () => {
       if (timer) {
         clearInterval(timer);
       }
     };
-  }, [fetcher, firstLoad, polling_time_ms]);
+  }, [fetcher, firstLoad, polling_time_ms, isLoading]);
 
   return { ...useApiResult, firstLoad };
 };
