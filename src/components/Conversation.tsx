@@ -1,4 +1,5 @@
-import { Skeleton, Typography, PageHeader } from 'antd';
+import { Skeleton, Typography, Button } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { pick, flatMap, isEmpty, last, get, unionBy } from 'lodash';
 import React, {
   FunctionComponent,
@@ -22,6 +23,7 @@ type ConversationType = {
   id: string;
   accountId: string;
   participants: Array<ParticipantType>;
+  clearActiveConversation: () => void;
 };
 
 type ConversationDataType = {
@@ -37,6 +39,7 @@ const Conversation: FunctionComponent<ConversationType> = ({
   id,
   accountId,
   participants,
+  clearActiveConversation,
 }) => {
   const messagesEndRef = createRef<HTMLDivElement>();
   const [firstLoad, setFirstLoad] = useState(false);
@@ -114,15 +117,23 @@ const Conversation: FunctionComponent<ConversationType> = ({
 
   return (
     <>
-      <PageHeader
+      <div
         style={{
           border: '1px solid rgb(235, 237, 240)',
           backgroundColor: '#e6f7ff',
         }}
-        title={`Conversation between ${participants
-          .map((p) => p.name)
-          .join(' and ')}`}
-      />
+      >
+        <Button
+          type="link"
+          icon={<ArrowLeftOutlined />}
+          onClick={clearActiveConversation}
+        />
+        <span style={{ fontWeight: 'bold' }}>
+          {`Conversation between ${participants
+            .map((p) => p.name)
+            .join(' and ')}`}
+        </span>
+      </div>
       <Skeleton loading={isLoading && firstLoad} active>
         <div
           ref={containerRef}
