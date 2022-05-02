@@ -46,6 +46,7 @@ const ComposeMessage: FunctionComponent<ComposeMessageProps> = ({
           autoSize={{ minRows: 1, maxRows: 6 }}
           onChange={inputChange}
           onKeyDown={handleKeyDown}
+          autoFocus
         />
         <Button
           type="primary"
