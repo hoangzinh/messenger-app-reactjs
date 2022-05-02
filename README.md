@@ -8,9 +8,9 @@ Principles and Design Patterns of React Programming - batch01 - group13
 
 [x] Show recent messages
 
-[ ] Scrolling upward to load previous messages
+[x] Scrolling upward to load previous messages
 
-[ ] Mobile compatible (responsive)
+[x] Mobile compatible (responsive)
 
 ## Demo
 
@@ -21,3 +21,7 @@ https://messenger-app-reactjs.vercel.app/
 ```
 npm start
 ```
+
+## Project planning
+
+https://github.com/hoangzinh/messenger-app-reactjs/projects/1
