@@ -25,3 +25,7 @@ npm start
 ## Project planning
 
 https://github.com/hoangzinh/messenger-app-reactjs/projects/1
+
+## Screenshots
+
+https://github.com/hoangzinh/messenger-app-reactjs/tree/master/screenshots
